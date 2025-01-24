@@ -27,7 +27,6 @@ export const Modal = ({
   const mods: Record<string, boolean> = {
     [s.opened]: isOpen,
     [s.isClosing]: isClosing,
-    [s[theme]]: true,
   };
 
   const closeHandler = useCallback(() => {
@@ -62,7 +61,7 @@ export const Modal = ({
 
   return (
     <Portal>
-      <div className={classNames(s.Modal, mods, [className])}>
+      <div className={classNames(s.Modal, mods, [className, theme])}>
         <div className={s.overlay} onClick={closeHandler}>
           <div className={s.content} onClick={onContentClick}>
             {children}
