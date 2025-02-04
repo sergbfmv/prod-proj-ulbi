@@ -1,16 +1,16 @@
 import { classNames } from 'shared/lib/classNames/classNames';
-import { useTranslation } from 'react-i18next';
-import s from './Text.module.scss';
+import cls from './Text.module.scss';
 
 export enum TextTheme {
     PRIMARY = 'primary',
-    ERROR = 'error'
+    ERROR = 'error',
 }
+
 interface TextProps {
-    className?: string
-    title?:string
-    text?: string
-    theme?: TextTheme
+    className?: string;
+    title?: string;
+    text?: string;
+    theme?: TextTheme;
 }
 
 export const Text = (props: TextProps) => {
@@ -22,9 +22,9 @@ export const Text = (props: TextProps) => {
   } = props;
 
   return (
-    <div className={classNames(s.Text, { [s[theme]]: true }, [className])}>
-      {title && <p className={s.title}>{title}</p>}
-      {text && <p className={s.text}>{text}</p>}
+    <div className={classNames(cls.Text, { [cls[theme]]: true }, [className])}>
+      {title && <p className={cls.title}>{title}</p>}
+      {text && <p className={cls.text}>{text}</p>}
     </div>
   );
 };

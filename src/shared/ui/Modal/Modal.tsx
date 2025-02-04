@@ -3,7 +3,8 @@ import React, {
   ReactNode, useCallback, useEffect, useRef, useState,
 } from 'react';
 import { Portal } from 'shared/ui/Portal/Portal';
-import s from './Modal.module.scss';
+import { useTheme } from 'app/providers/ThemeProvider';
+import cls from './Modal.module.scss';
 
 interface ModalProps {
     className?: string;
@@ -13,22 +14,27 @@ interface ModalProps {
     lazy?: boolean;
 }
 
-export const Modal = ({
-  className,
-  children,
-  isOpen,
-  onClose,
-  lazy,
-}: ModalProps) => {
-  const ANIMATION_DELAY = 300;
-  const [isClosing, setIsClosing] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
-  const [isMounted, setIsMounted] = useState(false);
+const ANIMATION_DELAY = 300;
 
-  const mods: Record<string, boolean> = {
-    [s.opened]: isOpen,
-    [s.isClosing]: isClosing,
-  };
+export const Modal = (props: ModalProps) => {
+  const {
+    className,
+    children,
+    isOpen,
+    onClose,
+    lazy,
+  } = props;
+
+  const [isClosing, setIsClosing] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsMounted(true);
+    }
+  }, [isOpen]);
 
   const closeHandler = useCallback(() => {
     if (onClose) {
@@ -40,31 +46,32 @@ export const Modal = ({
     }
   }, [onClose]);
 
-  const onContentClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-
+  // Новые ссылки!!!
   const onKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       closeHandler();
     }
   }, [closeHandler]);
 
+  const onContentClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   useEffect(() => {
     if (isOpen) {
       window.addEventListener('keydown', onKeyDown);
     }
+
     return () => {
       clearTimeout(timerRef.current);
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [isOpen, onKeyDown]);
 
-  useEffect(() => {
-    if (isOpen) {
-      setIsMounted(true);
-    }
-  }, [isOpen]);
+  const mods: Record<string, boolean> = {
+    [cls.opened]: isOpen,
+    [cls.isClosing]: isClosing,
+  };
 
   if (lazy && !isMounted) {
     return null;
@@ -72,9 +79,12 @@ export const Modal = ({
 
   return (
     <Portal>
-      <div className={classNames(s.Modal, mods, [className])}>
-        <div className={s.overlay} onClick={closeHandler}>
-          <div className={s.content} onClick={onContentClick}>
+      <div className={classNames(cls.Modal, mods, [className, theme, 'app_modal'])}>
+        <div className={cls.overlay} onClick={closeHandler}>
+          <div
+            className={cls.content}
+            onClick={onContentClick}
+          >
             {children}
           </div>
         </div>
